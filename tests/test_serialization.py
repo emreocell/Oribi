@@ -144,14 +144,14 @@ def test_markdown_renders_column_names_as_literal_text():
     markdown = inspect(frame).to_markdown()
 
     # Markdown characters are escaped and a newline never splits a line.
-    assert "### a\*b" in markdown
-    assert "### \`code\`" in markdown
-    assert "### \# head" in markdown
+    assert r"### a\*b" in markdown
+    assert r"### \`code\`" in markdown
+    assert r"### \# head" in markdown
     assert "### line break" in markdown
-    assert "- **a\*b**: numeric measure" in markdown
-    assert "Negative values in a\*b" in markdown
-    assert "a*b" not in markdown.replace("a\*b", "")
+    assert r"- **a\*b**: numeric measure" in markdown
+    assert r"Negative values in a\*b" in markdown
+    assert "a*b" not in markdown.replace(r"a\*b", "")
     assert "line\nbreak" not in markdown
     # Underscores inside a word are left readable.
     assert "### order_id" in markdown
-    assert "order\_id" not in markdown
+    assert r"order\_id" not in markdown
