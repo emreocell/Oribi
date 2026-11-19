@@ -127,3 +127,31 @@ def test_markdown_warning_change_leaves_structured_output_alone():
     exported = context.to_dict()
     assert any(w["code"] == "negative_measure_values" for w in exported["warnings"])
     assert json.loads(context.to_json()) == exported
+
+
+def test_markdown_renders_column_names_as_literal_text():
+    import pandas as pd
+
+    frame = pd.DataFrame(
+        {
+            "a*b": [-1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 100.0],
+            "`code`": list("abababab"),
+            "line\nbreak": range(8),
+            "# head": [1] * 8,
+            "order_id": list("aabbccdd"),
+        }
+    )
+    markdown = inspect(frame).to_markdown()
+
+    # Markdown characters are escaped and a newline never splits a line.
+    assert "### a\*b" in markdown
+    assert "### \`code\`" in markdown
+    assert "### \# head" in markdown
+    assert "### line break" in markdown
+    assert "- **a\*b**: numeric measure" in markdown
+    assert "Negative values in a\*b" in markdown
+    assert "a*b" not in markdown.replace("a\*b", "")
+    assert "line\nbreak" not in markdown
+    # Underscores inside a word are left readable.
+    assert "### order_id" in markdown
+    assert "order\_id" not in markdown
