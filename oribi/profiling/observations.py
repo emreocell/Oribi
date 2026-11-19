@@ -53,6 +53,9 @@ class AnalysisSession:
             logical = "temporal"
         elif pd.api.types.is_numeric_dtype(series.dtype):
             logical = "numeric"
+        elif getattr(series.dtype, "kind", None) == "m":
+            # Elapsed durations (timedelta64) are neither identifiers nor measures here.
+            logical = "duration"
         elif isinstance(series.dtype, pd.CategoricalDtype):
             logical = "categorical"
         elif series.dtype == object or pd.api.types.is_string_dtype(series.dtype):
